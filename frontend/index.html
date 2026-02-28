@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingwa Sokoni - Data Bundles</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
+        body {
+            background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+            color:#fff;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            min-height:100vh;
+        }
+        .container {
+            background: rgba(255,255,255,0.05);
+            padding: 40px;
+            border-radius: 15px;
+            text-align:center;
+            width: 350px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+        }
+        h1 { color:#ffdd00; text-shadow: 2px 2px 5px #000; margin-bottom: 10px; }
+        p { margin-bottom: 20px; font-size: 1em; line-height: 1.5; }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border:none;
+            outline:none;
+            font-size:1em;
+        }
+        button {
+            background: #ffdd00;
+            color:#000;
+            padding:12px 25px;
+            font-size:1.1em;
+            font-weight:bold;
+            border:none;
+            border-radius:10px;
+            cursor:pointer;
+            transition: all 0.3s ease;
+        }
+        button:hover { background:#ffd700; transform:scale(1.05); }
+        footer { margin-top:20px; font-size:0.8em; color:#aaa; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>DAVIS TECH PAY</h1>
+    <p>Trusted by 5k+ Kenyans</p>
+
+    <input type="tel" id="line" placeholder="Enter Safaricom line (07XXXXXXXX)" required>
+    <select id="bundle">
+        <option value="" disabled selected>Select Service to pay</option>
+        <option value="50">Web development</option>
+        <option value="70">Software development</option>
+        <option value="100">Cybersecurity services</option>
+    </select>
+
+    <button id="payButton">Proceed to Payment</button>
+    <footer>Powered by Davis Tech </footer>
+</div>
+
+<script>
+document.getElementById('payButton').addEventListener('click', async () => {
+    const line = document.getElementById('line').value;
+    const bundle = document.getElementById('bundle').value;
+
+    if(!line) return alert('Please enter your Safaricom line');
+    if(!bundle) return alert('Please select a data bundle');
+
+    try {
+        const res = await fetch('https://cedrick-subdiscoid-drake.ngrok-free.dev/pay', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({
+                email: line+'@bingwa.com', // dummy email for Paystack
+                amount: bundle
+            })
+        });
+
+        const data = await res.json();
+        if(data.authorization_url){
+            window.location.href = data.authorization_url; // redirect to Paystack
+        } else {
+            alert('Payment initialization failed.');
+        }
+    } catch(err){
+        console.error(err);
+        alert('Error connecting to backend');
+    }
+});
+</script>
+
+</body>
+</html>
